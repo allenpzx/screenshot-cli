@@ -5,10 +5,8 @@ const log = console.log;
 const figlet = require("figlet");
 const inquirer = require("inquirer");
 const { program } = require("commander");
-const screenshot = require("../utils/screenshot");
+const { screenshot, mobile_devices } = require("../utils/screenshot");
 const STATUS = require("ora")();
-const puppeteer = require("puppeteer");
-// const device_names = puppeteer.devices.map(v => v.name);
 
 const args = process.argv.slice(2);
 args.length === 0 &&
@@ -18,7 +16,7 @@ args.length === 0 &&
 
 program
   .usage("<command> [options]")
-  .version("0.0.1", "-v, --vers", "output the current version")
+  .version("0.0.2", "-v, --vers", "output the current version")
   .arguments("<cmd> [env]")
   .option("-u, --url <url>", "which web url to screenshot")
   .option("-d, --device <device>", "which device to screenshot. pc | mobile")
@@ -85,6 +83,16 @@ program
         }
       },
       {
+        type: "list",
+        choices: mobile_devices.map(v=>v.name),
+        name: "mobileType",
+        message: "Which mobile do you want to mock",
+        default: "iPhone 6",
+        when: function(answers) {
+          return answers.device === "mobile";
+        }
+      },
+      {
         type: "input",
         name: "fileName",
         message: "Input you filename",
@@ -102,15 +110,16 @@ program
         const _fileType = answers.fileType || fileType;
         const _fileExt = answers.fileExt || fileExt;
         const _fileName = answers.fileName || fileName;
+        const _mobileType = mobile_devices.find(v => v.name === answers.mobileType);
         const filePath = `${process.cwd()}/${_fileName}.${
           _fileType === "pdf" ? "pdf" : _fileExt
         }`;
-
         await screenshot({
           url: _url,
           type: _fileType,
           device: _device,
-          path: filePath
+          path: filePath,
+          mobileType: _mobileType
         });
         STATUS.succeed(
           `Please go ${chalk.magenta.bold.underline(`${filePath}`)} to check!`
@@ -118,11 +127,11 @@ program
       })
       .catch(error => {
         STATUS.fail(chalk.red(`Something wrong! ${error}`));
-        if (error.isTtyError) {
-          // Prompt couldn't be rendered in the current environment
-        } else {
-          // Something else when wrong
-        }
+        // if (error.isTtyError) {
+        //   // Prompt couldn't be rendered in the current environment
+        // } else {
+        //   // Something else when wrong
+        // }
       })
       .finally(() => {
         process.exit();

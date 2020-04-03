@@ -1,11 +1,18 @@
 const puppeteer = require("puppeteer");
-const iPhone = puppeteer.devices["iPhone 6"];
+const mobile_devices = puppeteer.devices;
+const defaultPhone = puppeteer.devices["iPhone 6"];
 
-async function Screenshot({ url, type, device, path }) {
+async function screenshot({
+  url,
+  type,
+  device,
+  path,
+  mobileType = defaultPhone
+}) {
   try {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    device === "mobile" && (await page.emulate(iPhone));
+    device === "mobile" && (await page.emulate(mobileType));
     await page.goto(url, { waitUntil: "networkidle0" });
     if (type === "pdf") {
       await page.pdf({ path });
@@ -20,4 +27,4 @@ async function Screenshot({ url, type, device, path }) {
   }
 }
 
-module.exports = Screenshot;
+module.exports = { screenshot, mobile_devices };
