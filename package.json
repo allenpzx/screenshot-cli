@@ -1,0 +1,23 @@
+{
+  "name": "screenshot-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node bin/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "screenshot": "bin/index.js"
+  },
+  "author": "zixiu",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^3.0.0",
+    "commander": "^5.0.0",
+    "figlet": "^1.3.0",
+    "inquirer": "^7.1.0",
+    "ora": "^4.0.3",
+    "puppeteer": "^2.1.1"
+  }
+}
